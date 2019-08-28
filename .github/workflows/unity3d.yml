@@ -17,9 +17,8 @@ jobs:
     runs-on: unbuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
-
-    env:
-      TEST_PLATFORM: editmode
+      env:
+        TEST_PLATFORM: editmode
 
     steps:
       - uses: actions/checkout@v1
@@ -32,9 +31,8 @@ jobs:
     runs-on: unbuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
-
-    env:
-      TEST_PLATFORM: playmode
+      env:
+        TEST_PLATFORM: playmode
 
     steps:
       - uses: actions/checkout@v1
@@ -47,9 +45,8 @@ jobs:
     runs-on: unbuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
-
-    env:
-      BUILD_TARGET: StandaloneWindows64
+      env:
+        BUILD_TARGET: StandaloneWindows64
 
     steps:
       - uses: actions/checkout@v1
@@ -62,14 +59,12 @@ jobs:
           name: my-artifact
           path: ./Builds/
 
-
   build_WebGL:
     runs-on: unbuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
-
-    env:
-      BUILD_TARGET: WebGL
+      env:
+        BUILD_TARGET: WebGL
 
     steps:
       - uses: actions/checkout@v1
@@ -86,9 +81,8 @@ jobs:
     runs-on: unbuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
-
-    env:
-      BUILD_TARGET: StandaloneLinux64
+      env:
+        BUILD_TARGET: StandaloneLinux64
 
     steps:
       - uses: actions/checkout@v1
