@@ -1,0 +1,66 @@
+name: Build and test a unity3d project
+
+on: [push]
+
+.default_container: &default_container
+  runs-on: unbuntu-latest
+  container:
+    image: gableroux/unity3d:2019.1.14f1
+
+.test_steps: &test_steps
+  steps:
+  - uses: actions/checkout@v1
+  - name: before script
+    run: ./ci/before_script.sh
+  - name: test
+    run: ./ci/test.sh
+
+.build_steps: &build_steps
+  steps:
+  - uses: actions/checkout@v1
+  - name: before script
+    run: ./ci/before_script.sh
+  - name: build
+    run: ./ci/build.sh
+  - uses: actions/upload-artifact@master
+    with:
+      name: my-artifact
+      path: ./Builds/
+
+jobs:
+  get_license:
+    <<: *default_container
+    steps:
+    - uses: actions/checkout@v1
+    - name: get license
+      run: ./ci/get_license.sh
+
+  test_editmode:
+    <<: *default_container
+    <<: *test_steps
+    env:
+      TEST_PLATFORM: editmode
+
+  test_playmode:
+    <<: *default_container
+    <<: *test_steps
+    env:
+      TEST_PLATFORM: playmode
+  
+  build_StandaloneWindows64:
+    <<: *default_container
+    <<: *build_steps
+    env:
+      BUILD_TARGET: StandaloneWindows64
+  
+  build_WebGL:
+    <<: *default_container
+    <<: *build_steps
+    env:
+      BUILD_TARGET: WebGL
+  
+  build_StandaloneLinux64:
+    <<: *default_container
+    <<: *build_steps
+    env:
+      BUILD_TARGET: StandaloneLinux64
