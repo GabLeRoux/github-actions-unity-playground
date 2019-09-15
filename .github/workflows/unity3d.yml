@@ -3,17 +3,17 @@ name: Build and test a unity3d project
 on: [push]
 
 jobs:
-  get_license:
-    runs-on: ubuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      volumes:
-        - .:/project
+  # get_license:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: gableroux/unity3d:2019.1.14f1
+  #     volumes:
+  #       - .:/project
 
-    steps:
-    - uses: actions/checkout@v1
-    - name: get license
-      run: ./ci/get_license.sh
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: get license
+  #     run: ./ci/get_license.sh
 
   test:
     strategy:
@@ -26,6 +26,7 @@ jobs:
         - .:/project
       env:
         TEST_PLATFORM: ${{ matrix.platform }}
+        UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v1
@@ -45,6 +46,7 @@ jobs:
         - .:/project
       env:
         BUILD_TARGET: ${{ matrix.target }}
+        UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v1
