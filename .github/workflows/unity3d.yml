@@ -20,45 +20,38 @@ jobs:
       matrix:
         platform: [editmode, playmode]
     runs-on: ubuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      volumes:
-        - .:/project
-      env:
-        TEST_PLATFORM: ${{ matrix.platform }}
-        # cannot use license here, leads to Unrecognized named-value: 'secrets'
-        # UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
-
     steps:
       - uses: actions/checkout@v1
-      - name: before script
+      - name: Pull docker image
         env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+        run: docker pull $IMAGE_NAME
+      - name: Run tests
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
           UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
-        run: ./ci/before_script.sh
-      - name: test
-        run: ./ci/test.sh
+          TEST_PLATFORM: ${{ matrix.platform }}
+        run: ./ci/docker_test.sh
 
   build:
     strategy:
       matrix:
         target: [StandaloneWindows64, WebGL, StandaloneLinux64]
     runs-on: ubuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      volumes:
-        - .:/project
-      env:
-        BUILD_TARGET: ${{ matrix.target }}
-        # UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v1
-      - name: before script
+      - name: Pull docker image
         env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+        run: docker pull $IMAGE_NAME
+      - name: Perform build
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
           UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
-        run: ./ci/before_script.sh
-      - name: build
-        run: ./ci/build.sh
+          BUILD_NAME: GithubActions
+          BUILD_TARGET: ${{ matrix.target }}
+        run: ./ci/docker_build.sh
       - uses: actions/upload-artifact@master
         with:
           name: my-artifact
