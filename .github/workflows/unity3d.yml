@@ -26,11 +26,14 @@ jobs:
         - .:/project
       env:
         TEST_PLATFORM: ${{ matrix.platform }}
-        UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
+        # cannot use license here, leads to Unrecognized named-value: 'secrets'
+        # UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v1
       - name: before script
+        env:
+          UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
         run: ./ci/before_script.sh
       - name: test
         run: ./ci/test.sh
@@ -46,11 +49,13 @@ jobs:
         - .:/project
       env:
         BUILD_TARGET: ${{ matrix.target }}
-        UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
+        # UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v1
       - name: before script
+        env:
+          UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
         run: ./ci/before_script.sh
       - name: build
         run: ./ci/build.sh
