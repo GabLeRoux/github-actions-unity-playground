@@ -54,5 +54,5 @@ jobs:
         run: ./ci/docker_build.sh
       - uses: actions/upload-artifact@master
         with:
-          name: my-artifact
+          name: ${{ matrix.target }}
           path: ./Builds/
