@@ -4,9 +4,11 @@ on: [push]
 
 jobs:
   get_license:
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
+      volumes:
+        - .:/project
 
     steps:
     - uses: actions/checkout@v1
@@ -17,9 +19,11 @@ jobs:
     strategy:
       matrix:
         platform: [editmode, playmode]
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
+      volumes:
+        - .:/project
       env:
         TEST_PLATFORM: ${{ matrix.platform }}
 
@@ -34,9 +38,11 @@ jobs:
     strategy:
       matrix:
         target: [StandaloneWindows64, WebGL, StandaloneLinux64]
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     container:
       image: gableroux/unity3d:2019.1.14f1
+      volumes:
+        - .:/project
       env:
         BUILD_TARGET: ${{ matrix.target }}
 
