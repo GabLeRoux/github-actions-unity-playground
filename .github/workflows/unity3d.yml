@@ -3,94 +3,56 @@ name: Build and test a unity3d project
 on: [push]
 
 jobs:
-  get_license:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
+  # get_license:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: gableroux/unity3d:2019.1.14f1
+  #     volumes:
+  #       - .:/project
 
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: get license
+  #     run: ./ci/get_license.sh
+
+  test:
+    strategy:
+      matrix:
+        platform: [editmode, playmode]
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: get license
-      run: ./ci/get_license.sh
+      - uses: actions/checkout@v1
+      - name: Pull docker image
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+        run: docker pull $IMAGE_NAME
+      - name: Run tests
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+          UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
+          TEST_PLATFORM: ${{ matrix.platform }}
+        run: ./ci/docker_test.sh
 
-  test_editmode:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      env:
-        TEST_PLATFORM: editmode
+  build:
+    strategy:
+      matrix:
+        target: [StandaloneWindows64, WebGL, StandaloneLinux64]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
-      - name: before script
-        run: ./ci/before_script.sh
-      - name: test
-        run: ./ci/test.sh
-
-  test_playmode:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      env:
-        TEST_PLATFORM: playmode
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: before script
-        run: ./ci/before_script.sh
-      - name: test
-        run: ./ci/test.sh
-
-  build_StandaloneWindows64:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      env:
-        BUILD_TARGET: StandaloneWindows64
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: before script
-        run: ./ci/before_script.sh
-      - name: build
-        run: ./ci/build.sh
+      - name: Pull docker image
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+        run: docker pull $IMAGE_NAME
+      - name: Perform build
+        env:
+          IMAGE_NAME: gableroux/unity3d:2019.1.14f1
+          UNITY_LICENSE_CONTENT: ${{ secrets.UNITY_LICENSE_CONTENT }}
+          BUILD_NAME: GithubActions
+          BUILD_TARGET: ${{ matrix.target }}
+        run: ./ci/docker_build.sh
       - uses: actions/upload-artifact@master
         with:
-          name: my-artifact
-          path: ./Builds/
-
-  build_WebGL:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      env:
-        BUILD_TARGET: WebGL
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: before script
-        run: ./ci/before_script.sh
-      - name: build
-        run: ./ci/build.sh
-      - uses: actions/upload-artifact@master
-        with:
-          name: my-artifact
-          path: ./Builds/
-
-  build_StandaloneLinux64:
-    runs-on: unbuntu-latest
-    container:
-      image: gableroux/unity3d:2019.1.14f1
-      env:
-        BUILD_TARGET: StandaloneLinux64
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: before script
-        run: ./ci/before_script.sh
-      - name: build
-        run: ./ci/build.sh
-      - uses: actions/upload-artifact@master
-        with:
-          name: my-artifact
+          name: ${{ matrix.target }}
           path: ./Builds/
